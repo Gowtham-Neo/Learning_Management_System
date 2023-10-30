@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Available Courses</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <script>
+        function viewCourseChapters(courseId) {
+            alert('View chapters for course with ID: ' + courseId);
+            window.location.href = `/viewChapter/${courseId}`;
+        }
+    </script>
+</head>
+<body>
+  <br><hr class="border-2 border-blue-400" >
+    <h1 class="text-3xl mb-4 font-bold text-center">Available Courses</h1>
+    <br>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+        <% courses.forEach(function(course) { %>
+            <div class="bg-gray-200 p-4 rounded shadow-lg hover:shadow-lg transition duration-300 ease-in-out mb-4 cursor-pointer ">
+                <h2 class="text-lg font-bold mb-2"><%= course.title %></h2>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="viewCourseChapters('<%= course.id %>')">View Course</button>      
+            <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-2" onclick="enrollCourse('<%= course.id %>')">Enroll</button>
+            </div>
+        <% }); %>
+        
+    </div>
+</body>
+</html>

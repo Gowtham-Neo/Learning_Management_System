@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../public/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <%- include("header.ejs") %>
+    <div class="min-h-screen bg-gray-100 flex flex-col items-center">
+        <div class="max-w-3xl w-full bg-white p-6 rounded-lg shadow-md mt-8">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-3xl text-gray-800 font-semibold"><%= course.title %></h1>
+                <div class="flex space-x-4">
+                    <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Edit</button>
+                    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Delete</button>
+                </div>
+            </div>
+            <div class="text-gray-700 text-sm mb-4">Description or details about the course can go here.</div>
+            <h2 class="text-lg font-semibold">Chapters</h2>
+            <ul class="list-disc pl-8">
+                <!-- Check if chapters are available -->
+                <% if (course.chapters && course.chapters.length > 0) { %>
+                    <!-- Display chapters dynamically -->
+                    <% course.chapters.forEach(function(chapter) { %>
+                        <li><%= chapter.title %></li>
+                    <% }); %>
+                <% } else { %>
+                    <!-- Display a message if no chapters are available -->
+                    <li>No chapters available</li>
+                <% } %>
+            </ul>
+            <div class="text-center mt-6">
+                <a href='/course/<%= course.id %>/chapter' class="bg-green-500 hover-bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Create Chapter</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

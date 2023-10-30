@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "Gowri",
+    "database": "Lms-dev",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "Gowri",
+    "database": "Lms-test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "Gowri",
+    "database": "Lms-Prod",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}

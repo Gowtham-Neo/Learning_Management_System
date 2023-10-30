@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+    <h1 class="text-3xl text-gray-800 my-4">Create a Page</h1>
+    <form action="/course/<%= courseId %>/chapter/<%= chapterId %>/page" method="POST">
+        <!-- Font Selection Dropdown -->
+        <label for="font" class="text-gray-600">Select Font:</label>
+        <select name="font" id="font" class="w-full px-4 py-2 mt-1 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 transition duration-300 hover:border-blue-500">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Verdana">Verdana</option>
+            <!-- Add more font options as needed -->
+        </select>
+
+        <label for="title" class="text-gray-600 mt-4">Page Title:</label>
+        <input type="text" name="title" id="title" required
+            class="w-full px-4 py-2 mt-1 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 transition duration-300 hover:border-blue-500">
+
+        <label for="content" class="text-gray-600 mt-4">Page Content:</label>
+        <textarea name="content" id="content" rows="6" required
+            class="w-full px-4 py-2 mt-1 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 transition duration-300 hover:border-blue-500"></textarea>
+
+        <label for="chapterId" class="text-gray-600 mt-4">Select Chapter:</label>
+        <select name="chapterId" id="chapterId" required
+            class="w-full px-4 py-2 mt-1 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500 transition duration-300 hover:border-blue-500">
+            <% chapters.forEach(function(chapter) { %>
+                <option value="<%= chapter.id %>"><%= chapter.title %></option>
+            <% }); %>
+        </select>
+
+        <button type="submit" class="w-full py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none transition duration-300">Create Page</button>
+    </form>
+</body>
+</html>

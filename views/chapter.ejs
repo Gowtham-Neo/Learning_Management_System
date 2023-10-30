@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.2/dist/tailwind.min.css" rel="stylesheet">
+    <title>Create Chapter</title>
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto mt-10">
+        <form action="/course/<%= courseId %>/chapter" class="p-6 bg-white shadow-lg rounded-lg flex flex-col items-center space-y-4" method="POST">
+            <h1 class="text-2xl font-semibold text-gray-800">Create a New Chapter</h1>
+
+            <!-- Chapter Title Input -->
+            <div class="w-full">
+                <label for="title" class="text-sm text-gray-600">Chapter Title</label>
+                <input type="text" id="title" name="title" placeholder="Enter the Chapter Title "
+                    class="w-full px-4 py-2 mt-1 rounded-md border required border-gray-300 focus:outline-none focus:border-blue-500">
+            </div>
+
+            <!-- Chapter Description Textarea -->
+            <div class="w-full">
+                <label for="description" class="text-sm text-gray-600">Chapter Description</label>
+                <textarea id="des" name="desc" placeholder="Enter the Chapter Description"
+                    class="w-full px-4 py-2 mt-1 rounded-md border required border-gray-300 focus:outline-none focus:border-blue-500"
+                    rows="4"></textarea>
+            </div>
+
+            <!-- Hidden Input for courseId -->
+            <input type="hidden" name="courseId" value="<%= courseId %>">
+
+            <!-- Create Chapter Button -->
+            <button type="submit"
+                class="w-full py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none">Create Chapter</button>
+        </form>
+    </div>
+</body>
+
+</html>

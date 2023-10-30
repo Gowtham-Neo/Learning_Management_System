@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title><%= title %></title>
+</head>
+<body>
+    <%- include("header.ejs") %>
+    <div class="container">
+        <!-- Educator Section -->
+        <div class="educator-section">
+            <h2>Educator</h2>
+            <div class="button-container">
+                <a href="#educator-signin">Sign In as Educator</a>
+                <a href="#educator-signup">Sign Up as Educator</a>
+            </div>
+        </div>
+        
+        <!-- Student Section -->
+        <div class="student-section">
+            <h2>Student</h2>
+            <div class="button-container">
+                <a href="#student-signin">Sign In as Student</a>
+                <a href="#student-signup">Sign Up as Student</a>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

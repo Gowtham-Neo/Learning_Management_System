@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        .page-content {
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4 bg-white rounded-lg shadow">
+        <h1 class="text-3xl text-gray-800 my-4"><%= title %></h1>
+        <input type="hidden" name="courseId" value="<%= courseId %>">
+        <input type="hidden" name="courseId" value="<%= chapterId %>">
+        <div class="page-content">
+            <h2 class="text-2xl text-gray-800">Page Content:</h2>
+            <p><%= content %></p>
+        </div>
+
+        <a href="/course/<%= courseId %>/chapter/<%= chapterId %>/page" class="block w-full py-2 text-white bg-blue-500 rounded-md text-center hover:bg-blue-600 focus:outline-none transition duration-300">
+            Create Another Page
+        </a>
+
+        <a href="/course/<%= courseId %>/<%= chapterId %>" class="block w-full py-2 text-white bg-green-500 rounded-md text-center mt-2 hover:bg-green-600 focus:outline-none transition duration-300">
+            Next Page
+        </a>
+    </div>
+</body>
+</html>
