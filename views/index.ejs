@@ -4,31 +4,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="./css/styles.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <title><%= title %></title>
 </head>
-<body>
+<body class="bg-gray-200 font-sans">
     <%- include("header.ejs") %>
-    <div class="container">
-        <!-- Educator Section -->
-        <div class="educator-section">
-            <h2>Educator</h2>
-            <div class="button-container">
-                <a href="#educator-signin">Sign In as Educator</a>
-                <a href="#educator-signup">Sign Up as Educator</a>
+    <div class="container flex justify-center items-center h-screen">
+        <div class="flex space-x-20 mb-20">
+            <div class="bg-white p-16 rounded-3xl shadow-2xl">
+                <h2 class="text-2xl text-gray-800 font-semibold mb-4">Educator</h2>
+                <div class="button-container">
+                    <a href="/signin/educator" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mb-4 block">Sign In as Educator</a>
+                    <a href="/signup/educator" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md block">Sign Up as Educator</a>
+                </div>
             </div>
-        </div>
-        
-        <!-- Student Section -->
-        <div class="student-section">
-            <h2>Student</h2>
-            <div class="button-container">
-                <a href="#student-signin">Sign In as Student</a>
-                <a href="#student-signup">Sign Up as Student</a>
+            <div class="bg-white p-16 rounded-3xl shadow-2xl">
+                <h2 class="text-2xl text-gray-800 font-semibold mb-4">Student</h2>
+                <div class="button-container">
+                    <a href="/signin/student" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mb-4 block">Sign In as Student</a>
+                    <a href="/signup/student" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md block">Sign Up as Student</a>
+                </div>
             </div>
         </div>
     </div>
-    
 </body>
 </html>

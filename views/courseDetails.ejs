@@ -12,28 +12,31 @@
     <div class="min-h-screen bg-gray-100 flex flex-col items-center">
         <div class="max-w-3xl w-full bg-white p-6 rounded-lg shadow-md mt-8">
             <div class="flex justify-between items-center mb-4">
-                <h1 class="text-3xl text-gray-800 font-semibold"><%= course.title %></h1>
+                <h1 class="text-3xl text-gray-800 font-bold"><%= course.title %></h1>
                 <div class="flex space-x-4">
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Edit</button>
-                    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Delete</button>
+                    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Edit</button>
+                    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Delete</button>
                 </div>
             </div>
-            <div class="text-gray-700 text-sm mb-4">Description or details about the course can go here.</div>
-            <h2 class="text-lg font-semibold">Chapters</h2>
-            <ul class="list-disc pl-8">
-                <!-- Check if chapters are available -->
-                <% if (course.chapters && course.chapters.length > 0) { %>
-                    <!-- Display chapters dynamically -->
-                    <% course.chapters.forEach(function(chapter) { %>
-                        <li><%= chapter.title %></li>
-                    <% }); %>
+                <h3 class="text-xl font-semibold mt-12 mb-8">Chapters</h3>
+                <% if (chapters && chapters.length > 0) { %>
+                    <ul>
+                        <% chapters.forEach(function(chapter) { %>
+                            <li>
+                                <div class="bg-gray-200 p-4 rounded hover:bg-gray-300 transition  ease-in-out mb-4 cursor-pointer">
+                                    <a href="/course/<%= chapter.courseId %>/chapter/<%= chapter.id %>">
+                                        <h2 class="text-lg font-bold"><%= chapter.title %></h2>
+                                    </a>
+                                </div>
+                            </li>
+                        <% }); %>
+                    </ul>
                 <% } else { %>
-                    <!-- Display a message if no chapters are available -->
-                    <li>No chapters available</li>
+                    <p>No chapters available</p>
                 <% } %>
-            </ul>
-            <div class="text-center mt-6">
-                <a href='/course/<%= course.id %>/chapter' class="bg-green-500 hover-bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Create Chapter</a>
+            </div>
+            <div class="text-left mt-6">
+                <a href='/course/<%= course.id %>/chapter' class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Create Chapter</a>
             </div>
         </div>
     </div>

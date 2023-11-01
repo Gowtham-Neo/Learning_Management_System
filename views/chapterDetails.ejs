@@ -16,7 +16,7 @@
                 <input type="hidden" name="courseId" value="<%= courseId %>">
                 <input type="hidden" name="courseId" value="<%= chapterId %>">
                 <div class="flex space-x-4">
-                    <button class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Edit</button>
+                    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Edit</button>
                     <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Delete</button>
                 </div>
             </div>
@@ -24,9 +24,23 @@
             <!-- You can customize the content for chapter details here -->
 
             <!-- Add additional content as needed -->
-            <h2 class="text-lg font-semibold">Page</h2>
+            <h2 class="text-xl font-semibold mt-12 mb-8">Page</h2>
+            <% if (pages.length > 0) { %>
+                <ul>
+                    <% pages.forEach(function(page) { %>
+                        <li>
+                            <div class="bg-gray-200 p-4 rounded hover:bg-gray-300 transition  ease-in-out mb-4 cursor-pointer">
+                                <a href="/viewpage/<%= courseId %>/<%= chapterId %>/<%= page.id %>"><h2 class="text-lg font-bold"><%= page.title %></h2></a>
+                            </div>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>No available pages.</p>
+            <% } %>
+            
             <div class="text-center mt-6">
-                <a href='/course/<%= courseId %>/chapter/<%= chapterId %>/page' class="bg-green-500 hover-bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Create a New Page</a>
+                <a href='/course/<%= courseId %>/chapter/<%= chapterId %>/page' class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Create a New Page</a>
             </div>
         </div>
     </div>

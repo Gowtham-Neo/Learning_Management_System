@@ -5,38 +5,35 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
 <body class="bg-gray-100">
-    <div class="container mx-auto mt-8">
-        <h1 class="text-3xl text-gray-800 mb-4">Chapters in this course</h1>
-
-        <!-- Display the content from the display.ejs template -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <% chapters.forEach(function(chapter) { %>
-                <div class="bg-white border border-gray-300 rounded-lg p-4">
-                    <h2 class="text-lg font-bold mb-2"><%= chapter.title %></h2>
-                    <p><%= chapter.desc %></p>
-                    <ul>
-                        <% pages.forEach(function(page) { %>
-                            <li><%= page.title %> - <%= page.content %></li>
+    <%- include("header.ejs") %>
+    <div class="min-h-screen bg-gray-100 flex flex-col items-center">
+        <div class="max-w-3xl w-full bg-white p-6 rounded-lg shadow-md mt-8">
+            <h1 class="text-3xl text-gray-800 font-bold mb-4"><%= course.title %></h1>
+            <div class="grid grid-cols-1">
+                <% chapters.forEach(function(chapter) { %>
+                    <div class="bg-white border border-gray-300 rounded-lg p-4 mb-4">
+                        <h2 class="text-lg font-bold mb-2"><%= chapter.title %></h2>
+                        <% chapter.pages.forEach(function(page) { %>
+                            <a href="/viewpage/<%= course.id %>/<%= chapter.id %>/<%= page.id %>" class=" text-blue-500 hover:none ">
+                                <div class="bg-white border border-gray-300 rounded-lg p-4 mb-4 bg-gray-100 hover:bg-gray-200 hover:text-black-200 ">
+                                        <%= page.title %>        
+                                </div>
+                            </a>
                         <% }); %>
-                    </ul>
-                    <div class="text-right mt-4">
-                        <!-- Add a lock icon or any other icon you prefer -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6 text-red-600">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 17l-1 1m0 0l-1-1m1-1l1-1m0 0l1 1m4-3a8.5 8.5 0 1 0-17 0 8.5 8.5 0 0 0 17 0z"></path>
-                        </svg>
                     </div>
-                </div>
-            <% }); %>
-        </div>
+                <% }); %>
+            </div>
 
-        <!-- Buttons to create another chapter and complete creating the course -->
-        <div class="mt-8 flex justify-between">
-            <a href="/createChapter" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Create Another Chapter
-            </a>
-            <a href="/completeCourse" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                Complete Creating Course
-            </a>
+            <!-- Buttons to create another chapter and complete creating the course -->
+            <div class="mt-2 flex justify-evenly">
+                <a href="/course/<%= course.id %>/chapter" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Create Another Chapter
+                </a>
+                <a href="/complete/course" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Complete Creating Course
+                </a>
+            </div>
+            
         </div>
     </div>
 </body>

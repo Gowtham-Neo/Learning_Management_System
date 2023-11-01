@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <title><%= title %></title>
+</head>
+<body class="bg-gray-200">
+    <%- include('header.ejs') %>
+    <div class="container mx-auto mt-8 p-5">
+        <div class="grid grid-cols-6">
+            <div class="col-start-3 col-span-2 bg-white p-8 rounded-3xl shadow-2xl">
+                <h1 class="text-2xl font-semibold mb-6">Signup as a New Educator</h1>
+                <form action="/educator/signup" method="post">
+                    <div class="mb-4">
+                        <label for="firstname" class="block text-gray-700">First Name:</label>
+                        <input type="text" name="firstname" id="firstname" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="mb-4">
+                        <label for="lastname" class="block text-gray-700">Last Name:</label>
+                        <input type="text" name="lastname" id="lastname" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700">Email:</label>
+                        <input type="email" name="email" id="email" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="block text-gray-700">Password:</label>
+                        <input type="password" name="password" id="password" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-white font-medium rounded px-5 py-2 hover:bg-blue-700">Sign up</button>
+                </form>
+                <p class="mt-4">Already a registered user? <a href="/signin/educator" class="text-blue-600">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
