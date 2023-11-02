@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasMany(models.Course, { foreignKey: "educatorId" });
     }
   }
   User.init(
@@ -18,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
       email: DataTypes.STRING,
       password: DataTypes.STRING,
       role: DataTypes.STRING,
-      sessions: DataTypes.STRING,
     },
     {
       sequelize,

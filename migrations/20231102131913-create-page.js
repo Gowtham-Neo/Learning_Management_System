@@ -18,6 +18,9 @@ module.exports = {
       chapterId: {
         type: Sequelize.INTEGER,
       },
+      iscomplete: {
+        type: Sequelize.BOOLEAN,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

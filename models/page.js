@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       content: DataTypes.TEXT,
       chapterId: DataTypes.INTEGER,
+      iscomplete: DataTypes.BOOLEAN,
     },
     {
       sequelize,

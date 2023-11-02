@@ -10,14 +10,21 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.hasMany(models.Chapter, { foreignKey: "courseId" });
+      this.belongsTo(models.User, { foreignKey: "educatorId" });
     }
-    static addcourse({ title }) {
-      return this.create({ title: title });
+    static addcourse({ title, educatorName, educatorId }) {
+      return this.create({
+        title: title,
+        educatorName: educatorName,
+        educatorId: educatorId,
+      });
     }
   }
   Course.init(
     {
       title: DataTypes.STRING,
+      educatorId: DataTypes.INTEGER,
+      educatorName: DataTypes.STRING,
     },
     {
       sequelize,

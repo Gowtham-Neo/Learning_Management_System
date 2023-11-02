@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Creation</title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <link href="../public/css/styles.css" rel="stylesheet">
 </head>
@@ -16,6 +17,7 @@
             <div class="col-start-3 col-span-2 bg-white p-8 rounded-3xl shadow-2xl">
                 <h1 class="text-2xl text-gray-800 font-semibold  mb-6">Create a New Course</h1>
                 <form class="max-w-md mx-auto" action="/course" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="mb-5">
                         <label for="title" class="block text-gray-700 text-md font-semibold mb-2">What is the name of this Course?</label>
                         <input class="w-full p-3 border border-gray-500 rounded focus:outline-none focus:border-blue-600 font-semibold" type="text" id="title" name="title" placeholder="Enter Course Title" required>

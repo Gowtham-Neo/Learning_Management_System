@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   Chapter.init(
     {
       title: DataTypes.STRING,
-      desc: DataTypes.STRING,
+      desc: DataTypes.TEXT,
       courseId: DataTypes.INTEGER,
     },
     {

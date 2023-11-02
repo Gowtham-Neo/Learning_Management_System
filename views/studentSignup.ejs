@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <title><%= title %></title>
 </head>
@@ -13,6 +14,7 @@
             <div class="col-start-3 col-span-2 bg-white p-8 rounded-3xl shadow-2xl">
                 <h1 class="text-2xl font-semibold mb-6">SignUp as a New Student</h1>
                 <form action="/student/signup" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="mb-4">
                         <label for="firstname" class="block text-gray-700">First Name:</label>
                         <input type="text" name="firstname" id="firstname" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
@@ -29,7 +31,16 @@
                         <label for="password" class="block text-gray-700">Password:</label>
                         <input type="password" name="password" id="password" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
                     </div>
-                    <button type="submit" class="bg-blue-500 text-white font-medium rounded px-5 py-2 hover:bg-blue-700">Sign up</button>
+                    <div class="flex flex-row mb-4">
+                        <button type="submit" class="bg-green-600 text-white font-medium rounded px-5 py-2 hover:bg-green-800">Sign up</button>
+                        <div class="mx-2">
+                            <% if (messages && messages.error && messages.error.length > 0) { %>
+                                <% for (var i = 0; i < messages.error.length; i++) { %>
+                                    <p class="text-red-600 font-mono text-base mt-2">! <%= messages.error[i] %></p>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
                 </form>
                 <p class="mt-4">Already a registered user? <a href="/signin/student" class="text-blue-600">Sign in</a></p>
             </div>
