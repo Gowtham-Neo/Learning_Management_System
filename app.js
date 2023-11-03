@@ -12,12 +12,14 @@ const LocalStrategy = require("passport-local");
 const flash = require("connect-flash");
 const passport = require("passport");
 const connectEnsurelogin = require("connect-ensure-login");
+const userRoutes = require("./routes/userRoute");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(flash());
 app.use(cookieParser("shh! some secret string"));
 app.use(csrf("this_should_be_32_character_long", ["POST", "PUT", "DELETE"]));
+app.use("/user", userRoutes);
 
 app.use(
   session({

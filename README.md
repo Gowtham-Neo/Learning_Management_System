@@ -5,15 +5,19 @@ The Learning Management System (LMS) is a web application built using Node.js an
 # Installation
 
 # Clone the repository
+
 git clone https://github.com/Gowtham-Neo/Learning_Management_System.git
 
 # Change directory
+
 cd Learning_Management_System
 
 # Install dependencies
+
 npm install
 
-# Hosting site 
+# Hosting site
+
 https://learning-management-system-v39t.onrender.com
 
 # Screenshorts
