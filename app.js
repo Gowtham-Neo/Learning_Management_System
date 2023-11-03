@@ -186,7 +186,7 @@ app.post("/student/signup", async (req, res) => {
     });
   } catch (error) {
     req.flash("error", "Email already registered");
-    res.redirect("/signup/player");
+    res.redirect("/signup/student");
     console.log(error);
   }
 });
