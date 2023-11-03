@@ -137,7 +137,7 @@ app.post("/educator/signup", async (req, res) => {
       res.redirect("/home");
     });
   } catch (error) {
-    req.flash("error", "Email already registered");
+    req.flash("error", "Email already registered!");
     res.redirect("/signup/educator");
     console.log(error);
   }
@@ -347,6 +347,13 @@ app.post("/course", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+app.get("/mycourse", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
+  const courses = await Course.findAll({
+    where: { educatorName: req.user.firstname },
+  });
+  res.render("myCourse", { courses, csrfToken: req.csrfToken() });
 });
 
 app.get(
