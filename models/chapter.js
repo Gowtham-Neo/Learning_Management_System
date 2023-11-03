@@ -12,8 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       Chapter.belongsTo(models.Course, {
         foreignKey: "courseId",
       });
-
-      // Associate Chapter with Page
       Chapter.hasMany(models.Page, {
         foreignKey: "chapterId",
       });

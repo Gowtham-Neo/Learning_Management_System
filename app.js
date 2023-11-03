@@ -362,6 +362,7 @@ app.get(
   async (req, res) => {
     const courseId = req.params.id;
     const chapters = await Chapter.findAll({ where: { courseId: courseId } });
+    const user = await User.findOne({ where: req.user.id });
 
     if (!courseId) {
       return res.status(400).json({ error: "Course ID is missing" });
@@ -374,6 +375,7 @@ app.get(
       }
       res.render("courseDetails", {
         course,
+        user,
         courseId,
         chapters,
         csrfToken: req.csrfToken(),
@@ -498,14 +500,11 @@ app.get(
     const pageId = req.params.pageId;
 
     try {
-      // Assuming you have a "Page" model and you want to find the page by its ID
       const page = await Page.findByPk(pageId);
 
       if (!page) {
         return res.status(404).send("Page not found");
       }
-
-      // Get the title and content from the retrieved page
       const title = page.title;
       const content = page.content;
 
@@ -560,11 +559,9 @@ app.get(
         return res.status(404).send("Course not found");
       }
 
-      // Fetch associated pages for each chapter
-
       for (const chapter of chapters) {
         const pages = await Page.findAll({ where: { chapterId: chapter.id } });
-        chapter.pages = pages; // Assign the pages to the chapter
+        chapter.pages = pages;
       }
       res.render("courseView", {
         chapters,
