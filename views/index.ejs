@@ -2,27 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<%= csrfToken %>">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <title><%= title %></title>
+    <style>
+        /* Custom CSS to adjust the position of the "Educator" box on desktop */
+        @media (min-width: 768px) {
+            .educator-box {
+                margin-top: 15px;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-200 font-sans">
     <%- include("header.ejs") %>
-    <div class="container flex justify-center items-center h-screen">
-        <div class="flex space-x-20 mb-20">
-            <div class="bg-white p-16 rounded-3xl shadow-2xl">
-                <h2 class="text-2xl text-gray-800 font-semibold mb-4">Educator</h2>
+    <div class="container mx-auto flex flex-col items-center justify-center h-screen">
+        <div class="flex flex-col space-y-4 md:flex-row space-y-0 space-x-4 mb-4 w-full md:w-2/3 lg:w-1/2">
+            <div class="bg-white p-8 rounded-lg shadow-xl educator-box">
+                <h2 class="text-2xl text-gray-800 font-semibold mb-2">Educator</h2>
                 <div class="button-container">
-                    <a href="/signin/educator" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mb-4 block">Sign In as Educator</a>
+                    <a href="/signin/educator" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mb-2 block">Sign In as Educator</a>
                     <a href="/signup/educator" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md block">Sign Up as Educator</a>
                 </div>
             </div>
-            <div class="bg-white p-16 rounded-3xl shadow-2xl">
-                <h2 class="text-2xl text-gray-800 font-semibold mb-4">Student</h2>
+            <div class="bg-white p-8 rounded-lg shadow-xl student-box">
+                <h2 class="text-2xl text-gray-800 font-semibold mb-2">Student</h2>
                 <div class="button-container">
-                    <a href="/signin/student" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mb-4 block">Sign In as Student</a>
+                    <a href="/signin/student" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md mb-2 block">Sign In as Student</a>
                     <a href="/signup/student" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md block">Sign Up as Student</a>
                 </div>
             </div>

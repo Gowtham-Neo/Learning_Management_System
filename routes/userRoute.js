@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User } = require("../models"); // Make sure to import the User model as needed.
+const { User } = require("../models");
 
 const saltRounds = 10;
 
-// Educator signup route
 router.post("/educator/signup", async (req, res) => {
   const Hashed = await bcrypt.hash(req.body.password, saltRounds);
   if (req.body.firstname == "") {
