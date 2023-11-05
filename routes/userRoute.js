@@ -33,7 +33,7 @@ router.post("/educator/signup", async (req, res) => {
       if (err) {
         console.log(err);
       }
-      res.redirect("/home");
+      res.redirect("/ehome");
     });
   } catch (error) {
     req.flash("error", "Email already registered!");
@@ -70,7 +70,7 @@ router.post("/student/signup", async (req, res) => {
       if (err) {
         console.log(err);
       }
-      res.redirect("/home");
+      res.redirect("/shome");
     });
   } catch (error) {
     req.flash("error", "Email already registered");

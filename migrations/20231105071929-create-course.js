@@ -12,10 +12,10 @@ module.exports = {
       title: {
         type: Sequelize.STRING,
       },
-      educatorId: {
+      userId: {
         type: Sequelize.INTEGER,
       },
-      educatorName: {
+      userName: {
         type: Sequelize.STRING,
       },
       createdAt: {

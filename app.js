@@ -136,7 +136,7 @@ app.post("/educator/signup", async (req, res) => {
         console.log(err);
       }
       const userRole = user.role;
-      res.redirect("/home");
+      res.redirect("/ehome");
     });
   } catch (error) {
     req.flash("error", "Email already registered!");
@@ -184,7 +184,7 @@ app.post("/student/signup", async (req, res) => {
       if (err) {
         console.log(err);
       }
-      res.redirect("/home");
+      res.redirect("/shome");
     });
   } catch (error) {
     req.flash("error", "Email already registered");
@@ -213,7 +213,7 @@ app.post("/educatorlogin", async (req, res) => {
     }
 
     req.flash("success", "Logged in successfully...!");
-    return res.redirect("/home");
+    return res.redirect("/ehome");
   } catch (error) {
     console.error(error);
     req.flash("error", "An error occurred");
@@ -227,9 +227,16 @@ app.post(
     failureRedirect: "/signin/educator",
     failureFlash: true,
   }),
+
   (req, res) => {
     console.log(req.user);
-    res.redirect("/home");
+    if (req.user.role === "Educator") {
+      req.flash("success", "Student logged in successfully");
+      res.redirect("/ehome");
+    } else {
+      req.flash("error", "Account Not Exists For this Mail");
+      res.redirect("/signin/educator");
+    }
   },
 );
 app.post("/studentlogin", async (req, res) => {
@@ -256,7 +263,7 @@ app.post("/studentlogin", async (req, res) => {
     }
 
     req.flash("success", "Logged in successfully...!");
-    return res.redirect("/home");
+    return res.redirect("/shome");
   } catch (error) {
     console.error(error);
     req.flash("error", "An error occurred");
@@ -272,22 +279,45 @@ app.post(
   }),
   (req, res) => {
     console.log(req.user);
-    res.redirect("/home");
+    if (req.user.role === "Student") {
+      req.flash("success", "Student logged in successfully");
+      res.redirect("/shome");
+    } else {
+      req.flash("error", "Account Not Exists For this Mail");
+      res.redirect("/signin/student");
+    }
   },
 );
 app.get("/complete/course", connectEnsurelogin.ensureLoggedIn(), (req, res) => {
   console.log(req.user);
-  res.redirect("/home");
+  res.redirect("/ehome");
 });
 
-app.get("/home", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
+app.get("/ehome", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
   console.log(req.user.firstname);
   const userRole = req.user.role;
   const firstname = req.user.firstname;
   const lastname = req.user.lastname;
   const user = await User.findOne({ where: { id: req.user.id } });
   const courses = await Course.findAll();
-  res.render("home", {
+  res.render("ehome", {
+    userRole,
+    firstname,
+    lastname,
+    user,
+    courses,
+    csrfToken: req.csrfToken(),
+  });
+});
+
+app.get("/shome", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
+  console.log(req.user.firstname);
+  const userRole = req.user.role;
+  const firstname = req.user.firstname;
+  const lastname = req.user.lastname;
+  const user = await User.findOne({ where: { id: req.user.id } });
+  const courses = await Course.findAll();
+  res.render("shome", {
     userRole,
     firstname,
     lastname,
@@ -315,7 +345,11 @@ app.post(
     if (req.body.newpassword == req.body.retyped) {
       await user.update({ password: Hashed });
       req.flash("error", "Your password has changed");
-      return res.redirect("/home");
+      if (user.role === "Student") {
+        return res.redirect("/shome");
+      } else {
+        return res.redirect("/ehome");
+      }
     } else {
       req.flash("error", "Passwords do not match");
       res.redirect("/changePassword");
@@ -339,12 +373,11 @@ app.get("/course", connectEnsurelogin.ensureLoggedIn(), (req, res) => {
 app.post("/course", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
   try {
     const title = req.body.title;
-    const educatorName = req.user.firstname;
-    const educatorId = req.user.id;
-    const course = await Course.addcourse({ title, educatorName, educatorId });
-    console.log(educatorName);
+    const userName = req.user.firstname;
+    const userId = req.user.id;
+    const course = await Course.addcourse({ title, userName, userId });
+    console.log(userName);
     res.redirect(`/courseDetails/${course.id}`);
-    console.log(educatorName);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -353,7 +386,7 @@ app.post("/course", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
 
 app.get("/mycourse", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
   const courses = await Course.findAll({
-    where: { educatorName: req.user.firstname },
+    where: { userName: req.user.firstname },
   });
   res.render("myCourse", { courses, csrfToken: req.csrfToken() });
 });
@@ -395,6 +428,7 @@ app.get(
   async (req, res) => {
     const courseId = req.params.id;
     const chapters = await Chapter.findAll({ where: { courseId: courseId } });
+    const user = await User.findOne({ where: req.user.id });
 
     if (!courseId) {
       return res.status(400).json({ error: "Course ID is missing" });
@@ -408,6 +442,7 @@ app.get(
       res.render("eCourseView", {
         course,
         chapters,
+        user,
         csrfToken: req.csrfToken(),
       });
     } catch (error) {
@@ -599,15 +634,28 @@ app.get("/epage/view/:courseId/:chapterId/:pageId", async (req, res) => {
       return;
     }
 
-    const previousPageId = Number(pageId) - 1;
+    const previousPageIds = [
+      Number(pageId) - 1,
+      Number(pageId) - 2,
+      Number(pageId) - 3,
+      Number(pageId) - 4,
+      Number(pageId) - 5,
+    ];
     const previousPage = await Page.findOne({
-      where: { chapterId: chapterId, id: previousPageId },
+      where: { chapterId: chapterId, id: previousPageIds },
       order: [["id", "DESC"]],
     });
 
-    const nextPageId = Number(pageId) + 1;
+    const nextPageIds = [
+      Number(pageId) + 1,
+      Number(pageId) + 2,
+      Number(pageId) + 3,
+      Number(pageId) + 4,
+      Number(pageId) + 5,
+    ];
     const nextPage = await Page.findOne({
-      where: { id: nextPageId, chapterId: chapterId },
+      where: { id: nextPageIds, chapterId: chapterId },
+      order: [["id", "ASC"]],
     });
 
     res.render("ePageView.ejs", {
