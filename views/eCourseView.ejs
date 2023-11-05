@@ -11,7 +11,11 @@
 <body class="bg-gray-100 font-sans">
     <%- include("header.ejs") %>
     <div class="max-h-screen bg-gray-100 flex flex-col items-center">
-        <a href="/ehome" class="text-green-600 hover:text-green-800 underline underline-offset-4 font-semibold font">Back to Home</a>
+        <% if (user.role === 'Student') { %>
+            <a href="/shome" class="text-green-600 hover:text-green-800 underline underline-offset-4 font-semibold">Back to Home</a>
+        <% } else { %>
+            <a href="/ehome" class="text-green-600 hover:text-green-800 underline underline-offset-4 font-semibold">Back to Home</a>
+        <% } %>        
     </div>
     <div class="min-h-screen bg-gray-100 flex flex-col items-center">
         <div class="max-w-3xl w-full bg-white p-6 rounded-lg shadow-md mt-8">

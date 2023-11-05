@@ -81,7 +81,7 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-const { Course, Chapter, Page, User } = require("./models");
+const { Course, Chapter, Page, User, Enroll } = require("./models");
 const { rmSync } = require("fs");
 
 const saltRounds = 10;
