@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= chapter.title %></title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link href="../public/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <%- include("header.ejs") %>
+    <div class="max-h-screen bg-gray-100 flex flex-col items-center">
+        <a href="/ecourse/view/<%= courseId %>" class="text-green-600 hover:text-green-800 underline underline-offset-4 font-semibold font">Back to Course</a>
+    </div>
+    <div class="min-h-screen bg-gray-100 flex flex-col items-center">
+        <div class="max-w-3xl w-full bg-white p-6 rounded-lg shadow-md mt-8">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-3xl text-gray-800 font-semibold"><%= chapter.title %></h1>
+                <input type="hidden" name="courseId" value="<%= courseId %>">
+                <input type="hidden" name="courseId" value="<%= chapterId %>">
+                <!-- <div class="flex space-x-4">
+                    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Edit</button>
+                    <button class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-full shadow-md">Delete</button>
+                </div> -->
+            </div>
+            <div class="text-gray-700 text-sm mb-4"><%= chapter.desc %></div>
+            <h2 class="text-xl font-semibold mt-12 mb-8">Pages :</h2>
+            <% if (pages.length > 0) { %>
+                <ul>
+                    <% pages.forEach(function(page) { %>
+                        <li>
+                            <div class="bg-gray-200 p-4 rounded hover:bg-gray-300 transition  ease-in-out mb-4 cursor-pointer">
+                                <a href="/epage/view/<%= courseId %>/<%= chapterId %>/<%= page.id %>"><h2 class="text-lg font-bold"><%= page.title %></h2></a>
+                            </div>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>No available pages.</p>
+            <% } %>
+            
+        </div>
+    </div>
+</body>
+</html>

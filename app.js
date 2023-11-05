@@ -390,6 +390,34 @@ app.get(
 );
 
 app.get(
+  `/ecourse/view/:id`,
+  connectEnsurelogin.ensureLoggedIn(),
+  async (req, res) => {
+    const courseId = req.params.id;
+    const chapters = await Chapter.findAll({ where: { courseId: courseId } });
+
+    if (!courseId) {
+      return res.status(400).json({ error: "Course ID is missing" });
+    }
+
+    try {
+      const course = await Course.findOne({ where: { id: courseId } });
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      res.render("eCourseView", {
+        course,
+        chapters,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+);
+
+app.get(
   "/course/:courseId/chapter",
   connectEnsurelogin.ensureLoggedIn(),
   (req, res) => {
@@ -443,6 +471,40 @@ app.get(
       const pages = await Page.findAll({ where: { chapterId: chapterId } });
 
       res.render("chapterDetails", {
+        chapter,
+        courseId,
+        chapterId,
+        pages,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+);
+
+app.get(
+  `/echapter/view/:courseId/chapter/:chapterId`,
+  connectEnsurelogin.ensureLoggedIn(),
+  async (req, res) => {
+    const chapterId = req.params.chapterId;
+    if (!chapterId) {
+      return res.status(400).json({ error: "Chapter ID is missing" });
+    }
+    const courseId = req.params.courseId;
+
+    if (!courseId) {
+      return res.status(400).json({ error: "Course ID is missing" });
+    }
+    try {
+      const chapter = await Chapter.findOne({ where: { id: chapterId } });
+      if (!chapter) {
+        return res.status(404).json({ error: "chapter not found" });
+      }
+      const pages = await Page.findAll({ where: { chapterId: chapterId } });
+
+      res.render("eChapterView", {
         chapter,
         courseId,
         chapterId,
@@ -523,6 +585,47 @@ app.get(
     }
   },
 );
+
+app.get("/epage/view/:courseId/:chapterId/:pageId", async (req, res) => {
+  const { courseId, chapterId, pageId } = req.params;
+  const page = await Page.findByPk(pageId);
+
+  try {
+    const currentPage = await Page.findOne({
+      where: { id: pageId, chapterId: chapterId },
+    });
+    if (!currentPage) {
+      res.send("Page not found");
+      return;
+    }
+
+    const previousPageId = Number(pageId) - 1;
+    const previousPage = await Page.findOne({
+      where: { chapterId: chapterId, id: previousPageId },
+      order: [["id", "DESC"]],
+    });
+
+    const nextPageId = Number(pageId) + 1;
+    const nextPage = await Page.findOne({
+      where: { id: nextPageId, chapterId: chapterId },
+    });
+
+    res.render("ePageView.ejs", {
+      title: currentPage.title,
+      content: currentPage.content,
+      courseId,
+      page,
+      chapterId,
+      pageId,
+      previousPageId: previousPage ? previousPage.id : null,
+      nextPageId: nextPage ? nextPage.id : null,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 app.get(
   "/viewChapter/:courseId",
