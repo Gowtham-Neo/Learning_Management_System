@@ -294,27 +294,31 @@ app.get("/complete/course", connectEnsurelogin.ensureLoggedIn(), (req, res) => {
 });
 
 app.get("/ehome", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
-  console.log(req.user.firstname);
-  const userRole = req.user.role;
-  const firstname = req.user.firstname;
-  const lastname = req.user.lastname;
-  const user = await User.findOne({ where: { id: req.user.id } });
-  const courses = await Course.findAll()
-    .then((courses) => {
-      console.log(courses);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  try {
+    console.log(req.user.firstname);
+    const userRole = req.user.role;
+    const firstname = req.user.firstname;
+    const lastname = req.user.lastname;
+    const user = await User.findOne({ where: { id: req.user.id } });
+    const courses = await Course.findAll()
+      .then((courses) => {
+        console.log(courses);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-  res.render("ehome", {
-    userRole,
-    firstname,
-    lastname,
-    user,
-    courses,
-    csrfToken: req.csrfToken(),
-  });
+    res.render("ehome", {
+      userRole,
+      firstname,
+      lastname,
+      user,
+      courses,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (err) {
+    console.log;
+  }
 });
 
 app.get("/shome", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
