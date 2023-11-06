@@ -438,7 +438,7 @@ app.post("/enroll/course/:courseId", async (req, res) => {
   const userId = req.user.id;
   const enroll = await Enrollment.enroll({ userId, courseId });
   console.log(userId, courseId);
-  res.redirect(`/ecourse/view/${courseId}`);
+  res.redirect(`/scourse/view/${courseId}`);
 });
 
 app.get(
