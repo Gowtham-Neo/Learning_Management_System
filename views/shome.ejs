@@ -22,39 +22,54 @@
                     <a href="/signout" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded inline-block">Sign Out</a>
                 </div>
             </div>
-
+        </div>
+        <h3 class="text-2xl font-semibold">Enrolled Courses</h3>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <% enrolled.forEach(function(enrolled) { %>
+                <div class="bg-gray-200 p-4 rounded shadow-lg hover:shadow-lg transition duration-300 ease-in-out mb-4 cursor-pointer ">
+                    <h2 class="text-lg font-bold mb-2"><%= enrolled.course.title %></h2>
+                    <p class="text-gray-500 mb-2">Educator: <%= enrolled.course.userName %></p> 
+                    <div class="flex flex-row gap-4">
+                        <a href="/scourse/view/<%= enrolled.course.id %>">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Continue</button>
+                        </a>
+                    </div>
+                </div>
+            <% }); %>
         </div>
 
-        <div class="text-left">
-            <div>
-                <button>
-                    <a href="/enroled"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-block mb-2">
-                        Enroled Courses
-                    </a>
-                </button>
-            </div>
-        </div>
     </div>
 
     <div class="container mx-auto mt-6 p-4 bg-white rounded-lg shadow-lg">
         <h3 class="text-2xl font-semibold">Available Courses</h3>
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <% courses.forEach(function(course) { %>
-                <div class="bg-gray-200 p-4 rounded shadow-lg hover:shadow-lg transition duration-300 ease-in-out mb-4 cursor-pointer ">
-                    <h2 class="text-lg font-bold mb-2"><%= course.title %></h2>
-                    <p class="text-gray-500 mb-2">Educator: <%= course.userName %></p> 
-                    <a href="/ecourse/view/<%= course.id %>">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View Course</button>
-                    </a>
-                    <form action="/enroll/<%= course.id %>" method="POST">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-2"
-                        >Enroll</button>
-                    </form>
-                </div>
+                <% let isEnrolled = false; %>
+                <% enrolled.forEach(function(enrollment) { %>
+                    <% if (enrollment.courseId === course.id) { %>
+                        <% isEnrolled = true; %>
+                    <% } %>
+                <% }); %>
+        
+                <% if (!isEnrolled) { %>
+                    <div class="bg-gray-200 p-4 rounded shadow-lg hover:shadow-lg transition duration-300 ease-in-out mb-4 cursor-pointer">
+                        <h2 class="text-lg font-bold mb-2"><%= course.title %></h2>
+                        <p class="text-gray-500 mb-2">Educator: <%= course.userName %></p>
+                        <div class="flex flex-row gap-4">
+                            <a href="/scourse/view/<%= course.id %>">
+                                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View Course</button>
+                            </a>
+                            <form action="/enroll/course/<%= course.id %>" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <a href="/scourse/view/<%= course.id %>">
+                                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Enroll</button>
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                <% } %>
             <% }); %>
-        </div>
+        </div>        
     </div>
 </body>
 </html>

@@ -81,7 +81,7 @@ passport.deserializeUser((id, done) => {
     });
 });
 
-const { Course, Chapter, Page, User, Enroll } = require("./models");
+const { Course, Chapter, Page, User, Enrollment } = require("./models");
 const { rmSync } = require("fs");
 
 const saltRounds = 10;
@@ -317,10 +317,16 @@ app.get("/shome", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
   const lastname = req.user.lastname;
   const user = await User.findOne({ where: { id: req.user.id } });
   const courses = await Course.findAll();
+  const enrolled = await Enrollment.findAll({
+    where: { userId: user.id },
+    include: [{ model: Course, as: "course" }],
+  });
+
   res.render("shome", {
     userRole,
     firstname,
     lastname,
+    enrolled,
     user,
     courses,
     csrfToken: req.csrfToken(),
@@ -422,6 +428,14 @@ app.get(
   },
 );
 
+app.post("/enroll/course/:courseId", async (req, res) => {
+  const courseId = req.params.courseId;
+  const userId = req.user.id;
+  const enroll = await Enrollment.enroll({ userId, courseId });
+  console.log(userId, courseId);
+  res.redirect(`/ecourse/view/${courseId}`);
+});
+
 app.get(
   `/ecourse/view/:id`,
   connectEnsurelogin.ensureLoggedIn(),
@@ -429,6 +443,9 @@ app.get(
     const courseId = req.params.id;
     const chapters = await Chapter.findAll({ where: { courseId: courseId } });
     const user = await User.findOne({ where: req.user.id });
+    const isenrolled = await Enrollment.findOne({
+      where: { userId: user.id, courseId },
+    });
 
     if (!courseId) {
       return res.status(400).json({ error: "Course ID is missing" });
@@ -443,6 +460,47 @@ app.get(
         course,
         chapters,
         user,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+);
+
+app.get(
+  `/scourse/view/:id`,
+  connectEnsurelogin.ensureLoggedIn(),
+  async (req, res) => {
+    const courseId = req.params.id;
+    const chapters = await Chapter.findAll({ where: { courseId: courseId } });
+    const user = await User.findOne({ where: req.user.id });
+    const enrolled = await Enrollment.findAll({
+      where: { userId: user.id },
+      include: [{ model: Course, as: "course" }],
+    });
+    let isEnrolled = false;
+    enrolled.forEach(function (enrollment) {
+      if (enrollment.courseId === courseId) {
+        isEnrolled = true;
+      }
+    });
+
+    if (!courseId) {
+      return res.status(400).json({ error: "Course ID is missing" });
+    }
+
+    try {
+      const course = await Course.findOne({ where: { id: courseId } });
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      res.render("sCourseView", {
+        course,
+        chapters,
+        user,
+        isEnrolled,
         csrfToken: req.csrfToken(),
       });
     } catch (error) {
@@ -540,6 +598,40 @@ app.get(
       const pages = await Page.findAll({ where: { chapterId: chapterId } });
 
       res.render("eChapterView", {
+        chapter,
+        courseId,
+        chapterId,
+        pages,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+);
+
+app.get(
+  `/schapter/view/:courseId/chapter/:chapterId`,
+  connectEnsurelogin.ensureLoggedIn(),
+  async (req, res) => {
+    const chapterId = req.params.chapterId;
+    if (!chapterId) {
+      return res.status(400).json({ error: "Chapter ID is missing" });
+    }
+    const courseId = req.params.courseId;
+
+    if (!courseId) {
+      return res.status(400).json({ error: "Course ID is missing" });
+    }
+    try {
+      const chapter = await Chapter.findOne({ where: { id: chapterId } });
+      if (!chapter) {
+        return res.status(404).json({ error: "chapter not found" });
+      }
+      const pages = await Page.findAll({ where: { chapterId: chapterId } });
+
+      res.render("sChapterView", {
         chapter,
         courseId,
         chapterId,
@@ -659,6 +751,60 @@ app.get("/epage/view/:courseId/:chapterId/:pageId", async (req, res) => {
     });
 
     res.render("ePageView.ejs", {
+      title: currentPage.title,
+      content: currentPage.content,
+      courseId,
+      page,
+      chapterId,
+      pageId,
+      previousPageId: previousPage ? previousPage.id : null,
+      nextPageId: nextPage ? nextPage.id : null,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/spage/view/:courseId/:chapterId/:pageId", async (req, res) => {
+  const { courseId, chapterId, pageId } = req.params;
+  const page = await Page.findByPk(pageId);
+
+  try {
+    const currentPage = await Page.findOne({
+      where: { id: pageId, chapterId: chapterId },
+    });
+    if (!currentPage) {
+      res.send("Page not found");
+      return;
+    }
+
+    const previousPageIds = [
+      Number(pageId) - 1,
+      Number(pageId) - 2,
+      Number(pageId) - 3,
+      Number(pageId) - 4,
+      Number(pageId) - 5,
+    ];
+    const previousPage = await Page.findOne({
+      where: { chapterId: chapterId, id: previousPageIds },
+      order: [["id", "DESC"]],
+    });
+
+    const nextPageIds = [
+      Number(pageId) + 1,
+      Number(pageId) + 2,
+      Number(pageId) + 3,
+      Number(pageId) + 4,
+      Number(pageId) + 5,
+    ];
+    const nextPage = await Page.findOne({
+      where: { id: nextPageIds, chapterId: chapterId },
+      order: [["id", "ASC"]],
+    });
+
+    res.render("sPageView.ejs", {
       title: currentPage.title,
       content: currentPage.content,
       courseId,
