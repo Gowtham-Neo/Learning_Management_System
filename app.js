@@ -299,25 +299,19 @@ app.get("/ehome", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
     const userRole = req.user.role;
     const firstname = req.user.firstname;
     const lastname = req.user.lastname;
-    const user = await User.findOne({ where: { id: req.user.id } });
-    const courses = await Course.findAll()
-      .then((courses) => {
-        console.log(courses);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    const courses = await Course.findAll();
 
     res.render("ehome", {
       userRole,
       firstname,
       lastname,
-      user,
+      user: req.user,
       courses,
       csrfToken: req.csrfToken(),
     });
   } catch (err) {
-    console.log;
+    console.log(err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
