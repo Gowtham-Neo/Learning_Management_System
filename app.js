@@ -299,7 +299,14 @@ app.get("/ehome", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
   const firstname = req.user.firstname;
   const lastname = req.user.lastname;
   const user = await User.findOne({ where: { id: req.user.id } });
-  const courses = await Course.findAll();
+  const courses = await Course.findAll()
+    .then((courses) => {
+      console.log(courses);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
   res.render("ehome", {
     userRole,
     firstname,
