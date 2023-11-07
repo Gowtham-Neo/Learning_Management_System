@@ -483,14 +483,16 @@ app.get(
     const user = await User.findOne({ where: req.user.id });
     const enrolled = await Enrollment.findAll({
       where: { userId: user.id },
-      include: [{ model: Course, as: "course" }],
     });
-    let isEnrolled = false;
-    enrolled.forEach(function (enrollment) {
-      if (enrollment.courseId === courseId) {
-        isEnrolled = true;
+
+    let isEnrolled = 0;
+
+    for (let i = 0; i < enrolled.length; i++) {
+      if (enrolled[i].courseId == courseId) {
+        isEnrolled = 1;
+        break;
       }
-    });
+    }
 
     if (!courseId) {
       return res.status(400).json({ error: "Course ID is missing" });
@@ -501,6 +503,7 @@ app.get(
       if (!course) {
         return res.status(404).json({ error: "Course not found" });
       }
+      console.log("this is render " + isEnrolled);
       res.render("sCourseView", {
         course,
         chapters,
