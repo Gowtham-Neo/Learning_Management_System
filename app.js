@@ -675,16 +675,21 @@ app.post("/course/:courseId/chapter/:chapterId/page", async (req, res) => {
     if (!chapterId) {
       return res.status(400).json({ error: "Chapter ID is missing" });
     }
+    const iscompleted = 0;
     const page = await Page.addpage({
       title: title,
       content: content,
       chapterId: chapterId,
+      iscompleted,
     });
+
     const courseId = req.params.courseId;
     const pageId = page.id;
+    console.log(page.iscompleted);
     res.redirect(`/viewpage/${courseId}/${chapterId}/${pageId}`);
 
     console.log(pageId);
+    console.log(page.iscompleted);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -724,7 +729,10 @@ app.get(
 app.get("/epage/view/:courseId/:chapterId/:pageId", async (req, res) => {
   const { courseId, chapterId, pageId } = req.params;
   const page = await Page.findByPk(pageId);
-
+  const iscomplete = await Page.findOne({
+    where: { iscomplete: page.iscomplete },
+  });
+  console.log(iscomplete);
   try {
     const currentPage = await Page.findOne({
       where: { id: pageId, chapterId: chapterId },
@@ -772,6 +780,40 @@ app.get("/epage/view/:courseId/:chapterId/:pageId", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/markAsComplete/:courseId/:chapterId/:pageId", async (req, res) => {
+  const { chapterId, pageId } = req.params;
+  try {
+    const page = await Page.findOne({
+      where: {
+        chapterId: parseInt(chapterId),
+        id: parseInt(pageId),
+      },
+    });
+
+    if (!page) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Page not found" });
+    }
+
+    await Page.update(
+      { iscompleted: 1 },
+      {
+        where: {
+          chapterId: parseInt(chapterId),
+          id: parseInt(pageId),
+        },
+      },
+    );
+    console.log(page.iscompleted);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error updating iscompleted:", error);
+    res.status(500).json({ success: false, error: error.stack });
   }
 });
 

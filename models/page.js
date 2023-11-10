@@ -13,11 +13,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "chapterId",
       });
     }
-    static addpage({ title, content, chapterId }) {
+    static addpage({ title, content, chapterId, iscompleted }) {
       return this.create({
         title: title,
         content: content,
         chapterId: chapterId,
+        iscompleted,
       });
     }
   }
@@ -26,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       content: DataTypes.TEXT,
       chapterId: DataTypes.INTEGER,
-      iscomplete: DataTypes.BOOLEAN,
+      iscompleted: DataTypes.INTEGER,
     },
     {
       sequelize,

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
+    <meta name="_csrf" content="<%= csrfToken %>">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <style>
@@ -34,12 +35,65 @@
         <div class="page-actions mt-4">
             <% if (previousPageId) { %>
                 <a href="/spage/view/<%= courseId %>/<%= chapterId %>/<%= previousPageId %>" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Previous Page</a>
-              <% } %>
+            <% } %>
+
+            <% if (page.iscompleted) { %>
+                <button  class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Completed</button>
+            <% }else{ %>
+                <button onclick="markAsComplete('<%= courseId %>','<%= chapterId %>', '<%= pageId %>')" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">
+                    Mark as Complete
+                </button>
+                
+            <% } %>
               
-              <% if (nextPageId) { %>
+            <% if (nextPageId) { %>
                 <a href="/spage/view/<%= courseId %>/<%= chapterId %>/<%= nextPageId %>" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Next Page</a>
-              <% } %>
+            <% } %>
         </div>
     </div>
+
+    <script>
+        function markAsComplete(courseId, chapterId, pageId) {
+            const csrfTokenElement = document.querySelector('meta[name="_csrf"]');
+            const csrfToken = csrfTokenElement ? csrfTokenElement.getAttribute('content') : null;
+          
+            if (!csrfToken) {
+              console.error('CSRF token not found');
+              return;
+            }
+          
+            fetch(`/markAsComplete/${courseId}/${chapterId}/${pageId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken,
+              },
+              body: JSON.stringify({ _csrf: csrfToken }),
+            })
+              .then(response => {
+                if (response.ok) {
+                  return response.json();
+                } else {
+                  console.error('Server returned an error:', response.statusText);
+                  return response.text(); // Log the response body for detailed error information
+                }
+              })
+              .then(data => {
+                if (data && data.success !== undefined) {
+                  if (data.success) {
+                    location.reload();
+                  } else {
+                    console.error('Failed to update iscomplete:', data.error || 'Unknown error');
+                  }
+                } else {
+                  console.error('Invalid response from the server:', data);
+                }
+              })
+              .catch(error => {
+                console.error('Error updating iscomplete:', error);
+              });
+          }
+          
+    </script>
 </body>
 </html>
