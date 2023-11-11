@@ -480,6 +480,7 @@ app.get(
   connectEnsurelogin.ensureLoggedIn(),
   async (req, res) => {
     const courseId = req.params.id;
+    const course = await Course.findOne({ where: { id: courseId } });
     const chapters = await Chapter.findAll({ where: { courseId: courseId } });
     const user = await User.findOne({ where: req.user.id });
     const enrolled = await Enrollment.findAll({
@@ -489,30 +490,38 @@ app.get(
     let totalProgress = 0; // Initialize totalProgress outside the loop
 
     for (const chapter of chapters) {
-      const pages = await Page.findAll({
-        where: { chapterId: chapter.id, userId: null },
+      const pagescompleted = await Page.findAll({
+        where: { chapterId: chapter.id, userId: user.id },
       });
-      console.log(pages.length);
+      const pagesall = await Page.findAll({
+        where: { chapterId: chapter.id },
+      });
+      console.log(pagesall.length);
+      console.log(pagescompleted.length);
       let sum = 0;
 
-      if (pages.length > 0) {
-        for (let i = 0; i < pages.length; i++) {
-          sum += pages[i].iscompleted;
+      if (pagescompleted.length > 0) {
+        for (let i = 0; i < pagescompleted.length; i++) {
+          sum += pagescompleted[i].iscompleted;
         }
 
-        const average = sum / pages.length;
+        const average = sum / pagesall.length;
         console.log(average);
 
         const chapterProgress = average * 100;
         console.log(chapterProgress);
 
         totalProgress += chapterProgress;
-
+        console.log(totalProgress);
         if (average === 1) {
           try {
             await Chapter.update(
-              { iscompleted: 1, userId: req.user.id, progress: totalProgress },
-              { where: { id: chapter.id, courseId } },
+              {
+                iscompleted: 1,
+                userId: req.user.id,
+                progress: parseInt(totalProgress),
+              },
+              { where: { id: chapter.id } },
             );
           } catch (error) {
             console.error("Error updating chapter:", error);
@@ -523,6 +532,16 @@ app.get(
 
     const overallProgress =
       chapters.length > 0 ? totalProgress / chapters.length : 0;
+
+    try {
+      await Course.update(
+        { progress: parseInt(overallProgress) },
+        { where: { id: courseId } },
+      );
+    } catch (error) {
+      console.error("Error updating chapter:", error);
+    }
+    console.log(course.progress);
 
     let isEnrolled = 0;
     for (let i = 0; i < enrolled.length; i++) {
@@ -546,7 +565,7 @@ app.get(
         course,
         chapters,
         user,
-        overallProgress,
+        overallProgress: parseInt(overallProgress),
         isEnrolled,
         csrfToken: req.csrfToken(),
       });

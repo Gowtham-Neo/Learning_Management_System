@@ -33,6 +33,9 @@
                         <a href="/scourse/view/<%= enrolled.course.id %>">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Continue</button>
                         </a>
+                        <a href="/scourse/view/<%= enrolled.course.id %>">
+                            <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"><%= enrolled.course.progress %>% Completed</button>
+                        </a>
                     </div>
                 </div>
             <% }); %>

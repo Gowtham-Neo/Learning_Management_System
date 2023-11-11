@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         title: title,
         userName: userName,
         userId: userId,
+        progress: 0,
       });
     }
   }
@@ -26,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       userId: DataTypes.INTEGER,
       userName: DataTypes.STRING,
+      progress: DataTypes.INTEGER,
     },
     {
       sequelize,

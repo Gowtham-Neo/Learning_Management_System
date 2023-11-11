@@ -15,6 +15,9 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
       },
+      progress: {
+        type: Sequelize.INTEGER,
+      },
       userName: {
         type: Sequelize.STRING,
       },
