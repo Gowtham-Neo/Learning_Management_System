@@ -37,7 +37,7 @@
                 <a href="/spage/view/<%= courseId %>/<%= chapterId %>/<%= previousPageId %>" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Previous Page</a>
             <% } %>
 
-            <% if (page.iscompleted) { %>
+            <% if (page.iscompleted && page.userId == user.id) { %>
                 <button  class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Completed</button>
             <% }else{ %>
                 <button onclick="markAsComplete('<%= courseId %>','<%= chapterId %>', '<%= pageId %>')" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md">

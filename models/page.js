@@ -12,13 +12,15 @@ module.exports = (sequelize, DataTypes) => {
       Page.belongsTo(models.Chapter, {
         foreignKey: "chapterId",
       });
+      this.belongsTo(models.User, { foreignKey: "userId" });
     }
-    static addpage({ title, content, chapterId, iscompleted }) {
+    static addpage({ title, content, chapterId, iscompleted, userId }) {
       return this.create({
         title: title,
         content: content,
         chapterId: chapterId,
         iscompleted,
+        userId,
       });
     }
   }
@@ -28,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       content: DataTypes.TEXT,
       chapterId: DataTypes.INTEGER,
       iscompleted: DataTypes.INTEGER,
+      userId: DataTypes.INTEGER,
     },
     {
       sequelize,

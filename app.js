@@ -83,6 +83,7 @@ passport.deserializeUser((id, done) => {
 
 const { Course, Chapter, Page, User, Enrollment } = require("./models");
 const { rmSync } = require("fs");
+const chapter = require("./models/chapter");
 
 const saltRounds = 10;
 
@@ -485,8 +486,45 @@ app.get(
       where: { userId: user.id },
     });
 
-    let isEnrolled = 0;
+    let totalProgress = 0; // Initialize totalProgress outside the loop
 
+    for (const chapter of chapters) {
+      const pages = await Page.findAll({
+        where: { chapterId: chapter.id, userId: null },
+      });
+      console.log(pages.length);
+      let sum = 0;
+
+      if (pages.length > 0) {
+        for (let i = 0; i < pages.length; i++) {
+          sum += pages[i].iscompleted;
+        }
+
+        const average = sum / pages.length;
+        console.log(average);
+
+        const chapterProgress = average * 100;
+        console.log(chapterProgress);
+
+        totalProgress += chapterProgress;
+
+        if (average === 1) {
+          try {
+            await Chapter.update(
+              { iscompleted: 1, userId: req.user.id, progress: totalProgress },
+              { where: { id: chapter.id, courseId } },
+            );
+          } catch (error) {
+            console.error("Error updating chapter:", error);
+          }
+        }
+      }
+    }
+
+    const overallProgress =
+      chapters.length > 0 ? totalProgress / chapters.length : 0;
+
+    let isEnrolled = 0;
     for (let i = 0; i < enrolled.length; i++) {
       if (enrolled[i].courseId == courseId) {
         isEnrolled = 1;
@@ -508,6 +546,7 @@ app.get(
         course,
         chapters,
         user,
+        overallProgress,
         isEnrolled,
         csrfToken: req.csrfToken(),
       });
@@ -534,6 +573,7 @@ app.get(
 app.post("/course/:courseId/chapter", async (req, res) => {
   try {
     const { title, desc, courseId } = req.body;
+    const userId = req.user.id;
     if (!courseId) {
       return res.status(400).json({ error: "Course ID is missing" });
     }
@@ -541,8 +581,12 @@ app.post("/course/:courseId/chapter", async (req, res) => {
       title: title,
       desc: desc,
       courseId: courseId,
+      userId: userId,
     });
     console.log(courseId);
+    console.log(chapter.iscompleted);
+    console.log(chapter.userId);
+    console.log(chapter.progress);
 
     res.redirect(`/course/${courseId}/chapter/${chapter.id}`);
     console.log(chapter.id);
@@ -628,7 +672,7 @@ app.get(
       return res.status(400).json({ error: "Chapter ID is missing" });
     }
     const courseId = req.params.courseId;
-
+    const user = await User.findOne({ where: { id: req.user.id } });
     if (!courseId) {
       return res.status(400).json({ error: "Course ID is missing" });
     }
@@ -643,6 +687,7 @@ app.get(
         chapter,
         courseId,
         chapterId,
+        user,
         pages,
         csrfToken: req.csrfToken(),
       });
@@ -672,6 +717,7 @@ app.get(
 app.post("/course/:courseId/chapter/:chapterId/page", async (req, res) => {
   try {
     const { title, content, chapterId } = req.body;
+    const userId = req.user.id;
     if (!chapterId) {
       return res.status(400).json({ error: "Chapter ID is missing" });
     }
@@ -681,11 +727,13 @@ app.post("/course/:courseId/chapter/:chapterId/page", async (req, res) => {
       content: content,
       chapterId: chapterId,
       iscompleted,
+      userId,
     });
 
     const courseId = req.params.courseId;
     const pageId = page.id;
     console.log(page.iscompleted);
+    console.log(page.userId);
     res.redirect(`/viewpage/${courseId}/${chapterId}/${pageId}`);
 
     console.log(pageId);
@@ -726,65 +774,68 @@ app.get(
   },
 );
 
-app.get("/epage/view/:courseId/:chapterId/:pageId", async (req, res) => {
-  const { courseId, chapterId, pageId } = req.params;
-  const page = await Page.findByPk(pageId);
-  const iscomplete = await Page.findOne({
-    where: { iscomplete: page.iscomplete },
-  });
-  console.log(iscomplete);
-  try {
-    const currentPage = await Page.findOne({
-      where: { id: pageId, chapterId: chapterId },
-    });
-    if (!currentPage) {
-      res.send("Page not found");
-      return;
+app.get(
+  "/epage/view/:courseId/:chapterId/:pageId",
+  connectEnsurelogin.ensureLoggedIn(),
+  async (req, res) => {
+    const { courseId, chapterId, pageId } = req.params;
+    const page = await Page.findByPk(pageId);
+
+    try {
+      const currentPage = await Page.findOne({
+        where: { id: pageId, chapterId: chapterId },
+      });
+      if (!currentPage) {
+        res.send("Page not found");
+        return;
+      }
+
+      const previousPageIds = [
+        Number(pageId) - 1,
+        Number(pageId) - 2,
+        Number(pageId) - 3,
+        Number(pageId) - 4,
+        Number(pageId) - 5,
+      ];
+      const previousPage = await Page.findOne({
+        where: { chapterId: chapterId, id: previousPageIds },
+        order: [["id", "DESC"]],
+      });
+
+      const nextPageIds = [
+        Number(pageId) + 1,
+        Number(pageId) + 2,
+        Number(pageId) + 3,
+        Number(pageId) + 4,
+        Number(pageId) + 5,
+      ];
+      const nextPage = await Page.findOne({
+        where: { id: nextPageIds, chapterId: chapterId },
+        order: [["id", "ASC"]],
+      });
+
+      res.render("ePageView.ejs", {
+        title: currentPage.title,
+        content: currentPage.content,
+        courseId,
+        page,
+        chapterId,
+        pageId,
+        previousPageId: previousPage ? previousPage.id : null,
+        nextPageId: nextPage ? nextPage.id : null,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
     }
-
-    const previousPageIds = [
-      Number(pageId) - 1,
-      Number(pageId) - 2,
-      Number(pageId) - 3,
-      Number(pageId) - 4,
-      Number(pageId) - 5,
-    ];
-    const previousPage = await Page.findOne({
-      where: { chapterId: chapterId, id: previousPageIds },
-      order: [["id", "DESC"]],
-    });
-
-    const nextPageIds = [
-      Number(pageId) + 1,
-      Number(pageId) + 2,
-      Number(pageId) + 3,
-      Number(pageId) + 4,
-      Number(pageId) + 5,
-    ];
-    const nextPage = await Page.findOne({
-      where: { id: nextPageIds, chapterId: chapterId },
-      order: [["id", "ASC"]],
-    });
-
-    res.render("ePageView.ejs", {
-      title: currentPage.title,
-      content: currentPage.content,
-      courseId,
-      page,
-      chapterId,
-      pageId,
-      previousPageId: previousPage ? previousPage.id : null,
-      nextPageId: nextPage ? nextPage.id : null,
-      csrfToken: req.csrfToken(),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
+  },
+);
 
 app.post("/markAsComplete/:courseId/:chapterId/:pageId", async (req, res) => {
-  const { chapterId, pageId } = req.params;
+  const { courseId, chapterId, pageId } = req.params;
+  const userId = req.user.id;
+
   try {
     const page = await Page.findOne({
       where: {
@@ -799,8 +850,20 @@ app.post("/markAsComplete/:courseId/:chapterId/:pageId", async (req, res) => {
         .json({ success: false, message: "Page not found" });
     }
 
+    console.log("User ID:", userId);
+    console.log("Page Completion Status:", page.iscompleted);
+
+    // Check if the page is already marked as completed by the user
+    if (page.userId === userId && page.iscompleted) {
+      return res.json({
+        success: true,
+        message: "Page already completed by the user",
+      });
+    }
+
+    // Mark the page as completed for the user
     await Page.update(
-      { iscompleted: 1 },
+      { iscompleted: 1, userId },
       {
         where: {
           chapterId: parseInt(chapterId),
@@ -808,7 +871,6 @@ app.post("/markAsComplete/:courseId/:chapterId/:pageId", async (req, res) => {
         },
       },
     );
-    console.log(page.iscompleted);
 
     res.json({ success: true });
   } catch (error) {
@@ -817,59 +879,65 @@ app.post("/markAsComplete/:courseId/:chapterId/:pageId", async (req, res) => {
   }
 });
 
-app.get("/spage/view/:courseId/:chapterId/:pageId", async (req, res) => {
-  const { courseId, chapterId, pageId } = req.params;
-  const page = await Page.findByPk(pageId);
+app.get(
+  "/spage/view/:courseId/:chapterId/:pageId",
+  connectEnsurelogin.ensureLoggedIn(),
+  async (req, res) => {
+    const { courseId, chapterId, pageId } = req.params;
+    const page = await Page.findByPk(pageId);
+    const user = await User.findOne({ where: { id: req.user.id } });
 
-  try {
-    const currentPage = await Page.findOne({
-      where: { id: pageId, chapterId: chapterId },
-    });
-    if (!currentPage) {
-      res.send("Page not found");
-      return;
+    try {
+      const currentPage = await Page.findOne({
+        where: { id: pageId, chapterId: chapterId },
+      });
+      if (!currentPage) {
+        res.send("Page not found");
+        return;
+      }
+
+      const previousPageIds = [
+        Number(pageId) - 1,
+        Number(pageId) - 2,
+        Number(pageId) - 3,
+        Number(pageId) - 4,
+        Number(pageId) - 5,
+      ];
+      const previousPage = await Page.findOne({
+        where: { chapterId: chapterId, id: previousPageIds },
+        order: [["id", "DESC"]],
+      });
+
+      const nextPageIds = [
+        Number(pageId) + 1,
+        Number(pageId) + 2,
+        Number(pageId) + 3,
+        Number(pageId) + 4,
+        Number(pageId) + 5,
+      ];
+      const nextPage = await Page.findOne({
+        where: { id: nextPageIds, chapterId: chapterId },
+        order: [["id", "ASC"]],
+      });
+
+      res.render("sPageView.ejs", {
+        title: currentPage.title,
+        content: currentPage.content,
+        courseId,
+        page,
+        user,
+        chapterId,
+        pageId,
+        previousPageId: previousPage ? previousPage.id : null,
+        nextPageId: nextPage ? nextPage.id : null,
+        csrfToken: req.csrfToken(),
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
     }
-
-    const previousPageIds = [
-      Number(pageId) - 1,
-      Number(pageId) - 2,
-      Number(pageId) - 3,
-      Number(pageId) - 4,
-      Number(pageId) - 5,
-    ];
-    const previousPage = await Page.findOne({
-      where: { chapterId: chapterId, id: previousPageIds },
-      order: [["id", "DESC"]],
-    });
-
-    const nextPageIds = [
-      Number(pageId) + 1,
-      Number(pageId) + 2,
-      Number(pageId) + 3,
-      Number(pageId) + 4,
-      Number(pageId) + 5,
-    ];
-    const nextPage = await Page.findOne({
-      where: { id: nextPageIds, chapterId: chapterId },
-      order: [["id", "ASC"]],
-    });
-
-    res.render("sPageView.ejs", {
-      title: currentPage.title,
-      content: currentPage.content,
-      courseId,
-      page,
-      chapterId,
-      pageId,
-      previousPageId: previousPage ? previousPage.id : null,
-      nextPageId: nextPage ? nextPage.id : null,
-      csrfToken: req.csrfToken(),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
+  },
+);
 
 app.get(
   "/viewChapter/:courseId",

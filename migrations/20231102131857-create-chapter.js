@@ -18,6 +18,15 @@ module.exports = {
       courseId: {
         type: Sequelize.INTEGER,
       },
+      iscompleted: {
+        type: Sequelize.INTEGER,
+      },
+      userId: {
+        type: Sequelize.INTEGER,
+      },
+      progress: {
+        type: Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

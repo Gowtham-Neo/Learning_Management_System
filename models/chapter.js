@@ -15,9 +15,17 @@ module.exports = (sequelize, DataTypes) => {
       Chapter.hasMany(models.Page, {
         foreignKey: "chapterId",
       });
+      this.belongsTo(models.User, { foreignKey: "userId" });
     }
-    static addchapter({ title, desc, courseId }) {
-      return this.create({ title: title, desc: desc, courseId: courseId });
+    static addchapter({ title, desc, courseId, userId }) {
+      return this.create({
+        title: title,
+        desc: desc,
+        courseId: courseId,
+        iscompleted: 0,
+        userId,
+        progress: 0,
+      });
     }
   }
   Chapter.init(
@@ -25,6 +33,9 @@ module.exports = (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       desc: DataTypes.TEXT,
       courseId: DataTypes.INTEGER,
+      iscompleted: DataTypes.INTEGER,
+      userId: DataTypes.INTEGER,
+      progress: DataTypes.INTEGER,
     },
     {
       sequelize,
