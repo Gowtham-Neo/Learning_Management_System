@@ -491,7 +491,7 @@ app.post("/enroll/course/:courseId", async (req, res) => {
   console.log(userId, courseId);
   res.redirect(`/scourse/view/${courseId}`);
 });
-
+//command
 app.get(
   `/ecourse/view/:id`,
   connectEnsurelogin.ensureLoggedIn(),
