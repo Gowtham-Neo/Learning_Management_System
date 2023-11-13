@@ -63,8 +63,35 @@ describe("Learning Management System test suite", () => {
     const csrfToken = extractCsrfToken(res);
     await agent.post("/course").send({
       title: "Web Development",
-      educatorName: "Test",
-      EducatorId: 1,
+      userName: "Test",
+      userId: 1,
+      _csrf: csrfToken,
+    });
+  });
+  test("Build Chpater", async () => {
+    const agent = request.agent(server);
+    await login(agent, "user@test.com", "helloworld1234");
+    const res = await agent.get("/course/1/chapter");
+    const csrfToken = extractCsrfToken(res);
+    await agent.post("/course/1/chapter").send({
+      title: "Chpater 1",
+      desc: "@chpater 1",
+      courseId: 1,
+      _csrf: csrfToken,
+    });
+  });
+
+  test("Add Pages", async () => {
+    const agent = request.agent(server);
+    await login(agent, "user@test.com", "helloworld1234");
+    const res = await agent.get("/course/1/chapter/1/page");
+    const csrfToken = extractCsrfToken(res);
+    await agent.post("/course/1/chapter1/page").send({
+      title: "page 1",
+      content: "@page 1",
+      chapterId: 1,
+      iscompleted: 0,
+      userId: 1,
       _csrf: csrfToken,
     });
   });
