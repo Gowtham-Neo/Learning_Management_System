@@ -409,11 +409,16 @@ app.get("/reports", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
     });
 
     const enrollmentCounts = [];
-    for (const userCourse of userCourses) {
+    for (const course of userCourses) {
       const count = await Enrollment.count({
-        where: { courseId: userCourse.id },
+        where: { courseId: course.id },
       });
-      enrollmentCounts.push({ courseId: userCourse.id, count });
+      enrollmentCounts.push({
+        title: course.title,
+        userName: course.userName,
+        courseId: course.id,
+        count,
+      });
     }
 
     const allCourses = await Course.findAll();
@@ -430,7 +435,7 @@ app.get("/reports", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
       });
     }
 
-    const topThreeCourses = allEnrollmentCounts
+    const toptwoCourses = enrollmentCounts
       .sort((a, b) => b.count - a.count)
       .slice(0, 3);
 
@@ -439,7 +444,7 @@ app.get("/reports", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
       allCourses,
       enrollmentCounts,
       allEnrollmentCounts,
-      topThreeCourses,
+      toptwoCourses,
       csrfToken: req.csrfToken(),
     });
   } catch (error) {
