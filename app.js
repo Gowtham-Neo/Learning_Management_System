@@ -437,7 +437,7 @@ app.get("/reports", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
 
     const toptwoCourses = enrollmentCounts
       .sort((a, b) => b.count - a.count)
-      .slice(0, 3);
+      .slice(0, 2);
 
     res.render("reports", {
       userCourses,
