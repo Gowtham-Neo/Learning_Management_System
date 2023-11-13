@@ -54,12 +54,12 @@ passport.use(
           if (result) {
             return done(null, user);
           } else {
-            return done(null, false, { message: "Invalid password" });
+            return done(null, false, { message: "Invalid password !" });
           }
         })
         .catch(() => {
           return done(null, false, {
-            message: "Account is not exist for this mail",
+            message: "Account does not exists for this mail",
           });
         });
     },
@@ -83,7 +83,6 @@ passport.deserializeUser((id, done) => {
 
 const { Course, Chapter, Page, User, Enrollment } = require("./models");
 const { rmSync } = require("fs");
-const chapter = require("./models/chapter");
 
 const saltRounds = 10;
 
@@ -403,6 +402,52 @@ app.get("/mycourse", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
   res.render("myCourse", { courses, csrfToken: req.csrfToken() });
 });
 
+app.get("/reports", connectEnsurelogin.ensureLoggedIn(), async (req, res) => {
+  try {
+    const userCourses = await Course.findAll({
+      where: { userId: req.user.id },
+    });
+
+    const enrollmentCounts = [];
+    for (const userCourse of userCourses) {
+      const count = await Enrollment.count({
+        where: { courseId: userCourse.id },
+      });
+      enrollmentCounts.push({ courseId: userCourse.id, count });
+    }
+
+    const allCourses = await Course.findAll();
+    const allEnrollmentCounts = [];
+    for (const course of allCourses) {
+      const count = await Enrollment.count({
+        where: { courseId: course.id },
+      });
+      allEnrollmentCounts.push({
+        title: course.title,
+        userName: course.userName,
+        courseId: course.id,
+        count,
+      });
+    }
+
+    const topThreeCourses = allEnrollmentCounts
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3);
+
+    res.render("reports", {
+      userCourses,
+      allCourses,
+      enrollmentCounts,
+      allEnrollmentCounts,
+      topThreeCourses,
+      csrfToken: req.csrfToken(),
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.get(
   `/courseDetails/:id`,
   connectEnsurelogin.ensureLoggedIn(),
@@ -487,7 +532,7 @@ app.get(
       where: { userId: user.id },
     });
 
-    let totalProgress = 0; // Initialize totalProgress outside the loop
+    let totalProgress = 0;
 
     for (const chapter of chapters) {
       const pagescompleted = await Page.findAll({
@@ -872,7 +917,6 @@ app.post("/markAsComplete/:courseId/:chapterId/:pageId", async (req, res) => {
     console.log("User ID:", userId);
     console.log("Page Completion Status:", page.iscompleted);
 
-    // Check if the page is already marked as completed by the user
     if (page.userId === userId && page.iscompleted) {
       return res.json({
         success: true,
@@ -880,7 +924,6 @@ app.post("/markAsComplete/:courseId/:chapterId/:pageId", async (req, res) => {
       });
     }
 
-    // Mark the page as completed for the user
     await Page.update(
       { iscompleted: 1, userId },
       {

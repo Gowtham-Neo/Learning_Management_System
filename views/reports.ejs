@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <%- include('header.ejs') %>
+    <div class="container mx-auto mt-6 p-6 bg-white rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+            <div class="text-left">
+                <h2 class="text-2xl font-semibold">Here's your Report</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto mt-6 p-4 bg-white rounded-lg shadow-lg">
+        <h3 class="text-2xl font-semibold">Your Courses</h3>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <% userCourses.forEach(function(course) { %>
+                <div class="bg-gray-200 p-4 rounded shadow-lg hover:shadow-lg transition duration-300 ease-in-out mb-4 cursor-pointer">
+                    <h2 class="text-lg font-bold mb-2"><%= course.title %></h2>
+                    <p class="text-gray-500 mb-2">Educator: <%= course.userName %></p> 
+                    <div class="flex items-center gap-10">
+                        <a href="/ecourse/view/<%= course.id %>">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View Course</button>
+                        </a>
+                        <button class="flex items-center justify-between bg-white-500  text-black font-bold py-2 px-4 rounded mt-2">
+                                <% for (const enrollmentCount of enrollmentCounts) { %>
+                                    <% if (enrollmentCount.courseId === course.id) { %>
+                                       <p class="text-black-500 font-bold"> <%= enrollmentCount.count %> Enrolled </p>
+                                    <% } %>
+                                <% } %>
+                        </button>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <div class="container mx-auto mt-6 p-4 bg-white rounded-lg shadow-lg">
+        <h3 class="text-2xl font-semibold">Most Popular Courses</h3>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <% topThreeCourses.forEach(function(popularCourse) { %>
+                <div class="bg-yellow-300 p-4 rounded shadow-lg hover:shadow-lg -4 ">
+                    <h2 class="text-lg font-bold mb-2"><%= popularCourse.title %></h2>
+                    <p class="text-gray-500 mb-2">Educator: <%= popularCourse.userName %></p>
+                    <div class="flex items-center gap-10">
+                        <a href="/ecourse/view/<%= popularCourse.courseId %>">
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View Course</button>
+                        </a>
+                        <p class="text-green-500 font-bold mt-2"><%= popularCourse.count %> Enrolled</p>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>

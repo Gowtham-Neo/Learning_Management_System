@@ -7,12 +7,12 @@
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <style>
-        .page-content {
+        .pagecontent {
             border: 3px solid #e2e8f0;
             padding: 20px;
             margin: 20px 50px;
         }
-        .page-actions {
+        .pageactions {
             display: flex;
             gap: 3rem;
             align-items: center;
@@ -28,10 +28,10 @@
     <div class="container mx-auto p-4 bg-white rounded-lg shadow-md mt-8 mb-8">
         <h1 class="text-3xl text-gray-800 font-semibold mb-4 mx-12"><%= title %></h1>
         
-        <div class="page-content">
+        <div class="pagecontent">
             <p><%= content %></p>
         </div>
-        <div class="page-actions mt-4">
+        <div class="pageactions mt-4">
             <% if (previousPageId) { %>
                 <a href="/epage/view/<%= courseId %>/<%= chapterId %>/<%= previousPageId %>" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md">Previous Page</a>
               <% } %>
